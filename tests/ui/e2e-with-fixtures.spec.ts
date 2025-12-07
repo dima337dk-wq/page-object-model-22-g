@@ -36,3 +36,19 @@ test('TL-23-2 Find created order using fixtures auth and order create in deliver
   await trackOrderResponse
   expect(await foundPage.orderName.innerText()).toBe(newOrder.customerName)
 })
+
+test('TL-23-3 Change status OPEN to DELIVERED', async ({
+  orderId,
+  orderPage,
+  deliveryOrder,
+  foundPage
+}) => {
+  await orderPage.statusButton.click()
+  await orderPage.fillElement(orderPage.orderIdInputField, orderId)
+  deliveryOrder
+  const trackOrderResponse = orderPage.page.waitForResponse('**/orders/*')
+  await orderPage.trackButton.click()
+  await trackOrderResponse
+
+  await expect(foundPage.page.locator('.status-list__status_active')).toHaveText('DELIVERED')
+})

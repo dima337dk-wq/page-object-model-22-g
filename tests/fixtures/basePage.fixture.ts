@@ -1,4 +1,4 @@
-import { test as base, request } from '@playwright/test'
+import { test as base, request, expect } from '@playwright/test'
 import { LoginPage } from '../pages/login-page'
 import { OrderPage } from '../pages/order-page'
 import FoundPage from '../pages/found-page'
@@ -10,6 +10,7 @@ type ExtendedTest = {
   foundPage: FoundPage
   auth: { jwt: string }
   orderId: string
+  deliveryOrder: string
 }
 
 export const test = base.extend<ExtendedTest>({
@@ -53,4 +54,15 @@ export const test = base.extend<ExtendedTest>({
     const orderId = responseData.id
     await use(String(orderId))
   },
+  deliveryOrder: async ({ page, orderId }, use) => {
+    await page.route(`**/orders/${orderId}`, async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ status: 'DELIVERED' }),
+      })
+    })
+
+    await use('text');
+  }
 })
