@@ -3,6 +3,7 @@ import { expect } from '@playwright/test'
 import { LoginPage } from '../pages/login-page'
 import { OrderPage } from '../pages/order-page'
 import FoundPage from '../pages/found-page'
+import NotFoundPage from '../pages/not-found-page'
 
 test('TL-22-1 signIn with mocks', async ({ page }) => {
   const loginPage = new LoginPage(page)
@@ -65,10 +66,10 @@ test('TL-22-2 create and find order with mocks', async ({ context, auth }) => {
   expect(await foundPage.orderName.innerText()).toBe(newOrder.customerName)
 })
 
-test('TL-22-3 create and not find order with mocks', async ({ context }) => {
+test('TL-22-3 create and not find order with mocks', async ({ context, auth }) => {
   await context.addInitScript((token) => {
     localStorage.setItem('jwt', token)
-  }, jwt)
+  }, auth.jwt)
   const page = await context.newPage()
   const loginPage = new LoginPage(page)
   const orderPage = new OrderPage(page)
@@ -80,10 +81,10 @@ test('TL-22-3 create and not find order with mocks', async ({ context }) => {
   await expect(notFoundPage.title).toBeVisible()
 })
 
-test('TL-22-4 code 500', async ({ context }) => {
+test('TL-22-4 code 500', async ({ context, auth }) => {
   await context.addInitScript((token) => {
     localStorage.setItem('jwt', token)
-  }, jwt)
+  }, auth.jwt)
   const page = await context.newPage()
   const loginPage = new LoginPage(page)
   const orderPage = new OrderPage(page)
