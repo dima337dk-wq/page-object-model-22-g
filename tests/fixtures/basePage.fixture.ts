@@ -55,7 +55,7 @@ export const test = base.extend<ExtendedTest>({
     await use(String(orderId))
   },
   deliveryOrder: async ({ page, orderId }, use) => {
-    await page.route(`**/orders/${orderId}`, async route => {
+    await page.route(`**/orders/${orderId}`, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -63,6 +63,6 @@ export const test = base.extend<ExtendedTest>({
       })
     })
 
-    await use('text');
-  }
+    await use('text')
+  },
 })

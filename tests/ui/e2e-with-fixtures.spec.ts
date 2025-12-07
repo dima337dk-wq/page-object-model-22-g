@@ -41,7 +41,7 @@ test('TL-23-3 Change status OPEN to DELIVERED', async ({
   orderId,
   orderPage,
   deliveryOrder,
-  foundPage
+  foundPage,
 }) => {
   await orderPage.statusButton.click()
   await orderPage.fillElement(orderPage.orderIdInputField, orderId)
