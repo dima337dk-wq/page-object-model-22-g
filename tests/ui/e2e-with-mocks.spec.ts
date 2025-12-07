@@ -1,12 +1,9 @@
-import { expect, test } from '@playwright/test'
+import { test } from '../fixtures/basePage.fixture'
+import { expect } from '@playwright/test'
 import { LoginPage } from '../pages/login-page'
 import { OrderPage } from '../pages/order-page'
 import FoundPage from '../pages/found-page'
-import { SERVICE_URL } from '../../config/env-data'
 import NotFoundPage from '../pages/not-found-page'
-
-const jwt =
-  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkbWl0cmlraXJsaSIsImV4cCI6MTc2NDcwMDcwNiwiaWF0IjoxNzY0NjgyNzA2fQ.vX4LGmFZ9cG9yEzT9t4671LvSIchPHu4KxisRh5_ySe8dpAh08gUc4v7dGiBQCIQaHqT2pNAwLrhq6OgEvUyOg'
 
 test('TL-22-1 signIn with mocks', async ({ page }) => {
   const loginPage = new LoginPage(page)
@@ -19,7 +16,7 @@ test('TL-22-1 signIn with mocks', async ({ page }) => {
   await orderPage.checkElementVisibility(orderPage.trackButton)
 })
 
-test('TL-22-2 create and find order with mocks', async ({ context }) => {
+test('TL-22-2 create and find order with mocks', async ({ context, auth }) => {
   const newOrder = {
     status: 'OPEN',
     courierId: null,
@@ -30,16 +27,12 @@ test('TL-22-2 create and find order with mocks', async ({ context }) => {
   }
   await context.addInitScript((token) => {
     localStorage.setItem('jwt', token)
-  }, jwt)
+  }, auth.jwt)
   const page = await context.newPage()
   const loginPage = new LoginPage(page)
   const orderPage = new OrderPage(page)
   const foundPage = new FoundPage(page)
-  // await loginPage.mockAuth(); <--- disabled because of JWT
   await loginPage.open()
-  // await loginPage.usernameField.fill('test'); <--- disabled because of JWT
-  // await loginPage.passwordField.fill('test1234'); <--- disabled because of JWT
-  // await loginPage.signInButton.click(); <--- disabled because of JWT
 
   await expect(orderPage.phoneField).toBeVisible()
 
@@ -73,10 +66,10 @@ test('TL-22-2 create and find order with mocks', async ({ context }) => {
   expect(await foundPage.orderName.innerText()).toBe(newOrder.customerName)
 })
 
-test('TL-22-3 create and not find order with mocks', async ({ context }) => {
+test('TL-22-3 create and not find order with mocks', async ({ context, auth }) => {
   await context.addInitScript((token) => {
     localStorage.setItem('jwt', token)
-  }, jwt)
+  }, auth.jwt)
   const page = await context.newPage()
   const loginPage = new LoginPage(page)
   const orderPage = new OrderPage(page)
@@ -88,10 +81,10 @@ test('TL-22-3 create and not find order with mocks', async ({ context }) => {
   await expect(notFoundPage.title).toBeVisible()
 })
 
-test('TL-22-4 code 500', async ({ context }) => {
+test('TL-22-4 code 500', async ({ context, auth }) => {
   await context.addInitScript((token) => {
     localStorage.setItem('jwt', token)
-  }, jwt)
+  }, auth.jwt)
   const page = await context.newPage()
   const loginPage = new LoginPage(page)
   const orderPage = new OrderPage(page)
